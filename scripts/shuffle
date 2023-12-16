@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+
+import os
+import random
+
+filelist = []
+print("Indexing files...")
+for root,_,files in os.walk("."):
+    for file in files:
+        pt = os.path.join(root, file)
+        if pt in filelist:
+            continue
+        print(pt)
+        filelist.append(pt)
+
+print("==============================")
+print("Files indexed. Starting random playback. Enjoy :)")
+print("Press control-c to skip. close the window to stop playing.")
+print("==============================")
+while True:
+  file = random.choice(filelist)
+  os.system(f"mplayer \"{file}\"")
