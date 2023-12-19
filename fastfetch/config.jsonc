@@ -1,0 +1,189 @@
+// Load with --load-config examples/2.jsonc
+// Note that you must replace the image path to an existing image to display it.
+
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "logo": {
+        "padding": {
+            "top": 2
+        }
+    },
+    "display": {
+        "separator": " -> "
+    },
+    "modules": [
+        {
+            "type": "custom",
+            "format": "\u001b[90m┌────────────────────────────────────────────────────────────┐"
+        },
+        {
+            "type": "title",
+            "keyWidth": 10
+        },
+        {
+            "type": "custom",
+            "format": "\u001b[90m└────────────────────────────────────────────────────────────┘"
+        },
+        {
+            "type": "custom",
+            "format": " \u001b[90m  \u001b[31m  \u001b[32m  \u001b[33m  \u001b[34m  \u001b[35m  \u001b[36m  \u001b[37m  \u001b[38m  \u001b[39m       \u001b[38m  \u001b[37m  \u001b[36m  \u001b[35m  \u001b[34m  \u001b[33m  \u001b[32m  \u001b[31m  \u001b[90m"
+        },
+        {
+            "type": "custom",
+            "format": "\u001b[90m┌────────────────────────────────────────────────────────────┐"
+        },
+        {
+            "type": "datetime",
+            "key": "🗓 Date/time",
+            "keyColor": "green"
+        },
+        {
+            "type": "weather",
+            "key": "│ ├🌧 Weather",
+            "keyColor": "green"
+        },
+        {
+            "type": "command",
+            "key": "│ └✉ Mail",
+            "shell":"/bin/fish",
+            "text":"listmail",
+            "keyColor": "green"
+        },
+        {
+            "type": "os",
+            "key": " OS",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "bios",
+            "key": "│ ├ BIOS",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "kernel",
+            "key": "│ ├ Kernel",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "processes",
+            "key": "│ ├ Processes",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "packages",
+            "key": "│ ├󰏖 Packages",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "shell",
+            "key": "│ └ Shell",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "wm",
+            "key": " DE/WM",
+            "keyColor": "blue"
+        },
+        {
+            "type": "lm",
+            "key": "│ ├󰧨 LM",
+            "keyColor": "blue"
+        },
+        {
+            "type": "icons",
+            "key": "│ ├󰀻 Icons",
+            "keyColor": "blue"
+        },
+        {
+            "type": "terminal",
+            "key": "│ ├ Terminal",
+            "keyColor": "blue"
+        },
+        {
+            "type": "host",
+            "key": "💻 PC",
+            "keyColor": "green"
+        },
+        {
+            "type": "cpu",
+            "key": "│ ├⚙️CPU",
+            "keyColor": "green"
+        },
+        {
+            "type": "gpu",
+            "key": "│ ├⚙️GPU",
+            "keyColor": "green"
+        },
+        {
+            "type": "disk",
+            "key": "│ ├ Disk",
+            "keyColor": "green"
+        },
+        {
+            "type": "memory",
+            "key": "│ ├𓇲 RAM",
+            "keyColor": "green"
+        },
+        {
+            "type": "swap",
+            "key": "│ ├󰓡 Swap",
+            "keyColor": "green"
+        },
+        {
+            "type": "uptime",
+            "key": "│ ├󰅐 Uptime",
+            "keyColor": "green"
+        },
+        {
+            "type": "display",
+            "key": "│ └󰍹 Display",
+            "keyColor": "green"
+        },
+        {
+            "type": "wifi",
+            "key": "🖧  Network",
+            "keyColor": "red"
+        },
+        {
+            "type": "command",
+            "key": "│ ├MAC",
+            "shell":"/bin/fish",
+            "text":"ifconfig -a wlan0 | grep ether | cut -f 10 -d \" \"",
+            "keyColor": "red"
+        },
+        {
+            "type": "localip",
+            "key": "│ ├IP",
+            "keyColor": "red"
+        },
+        {
+            "type": "publicip",
+            "key": "│ └IP",
+            "keyColor": "red"
+        },
+        {
+            "type": "sound",
+            "key": " Sound",
+            "keyColor": "cyan"
+        },
+        {
+            "type": "player",
+            "key": "│ ├󰥠 Player",
+            "keyColor": "cyan"
+        },
+        {
+            "type": "media",
+            "key": "│ └󰝚 Media",
+            "keyColor": "cyan"
+        },
+        {
+            "type": "custom",
+            "format": "\u001b[90m└────────────────────────────────────────────────────────────┘"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": " \u001b[90m  \u001b[31m  \u001b[32m  \u001b[33m  \u001b[34m  \u001b[35m  \u001b[36m  \u001b[37m  \u001b[38m  \u001b[39m       \u001b[38m  \u001b[37m  \u001b[36m  \u001b[35m  \u001b[34m  \u001b[33m  \u001b[32m  \u001b[31m  \u001b[90m"
+        }
+    ]
+}
