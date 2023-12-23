@@ -13,10 +13,16 @@ for root,_,files in os.walk("."):
         print(pt)
         filelist.append(pt)
 
-print("==============================")
-print("Files indexed. Starting random playback. Enjoy :)")
-print("Press control-c to skip. close the window to stop playing.")
-print("==============================")
+
+
 while True:
-  file = random.choice(filelist)
-  os.system(f"mplayer \"{file}\"")
+    search = ""
+    file = random.choice(filelist)
+    try:
+        with open("/tmp/shuffle") as f:
+            search = f.read()
+    except:
+        search = ""
+    if not search in file:
+        continue
+    os.system(f"mplayer \"{file}\"")
