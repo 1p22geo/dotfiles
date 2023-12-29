@@ -5,7 +5,7 @@
 # if you can help, pls send a pull request.
 # if bShuffle cannot bind to this port, it will try the one right after, and so on
 # max_tries controls how many times can it increment the port before stopping
-port = 6002
+PORT = 6002
 max_tries = 10
 
 import os
@@ -142,18 +142,20 @@ def threaded(c):
 
 def s_thread():
     global s
-    global port
     host = "0.0.0.0"
-
+    port  = PORT
     while True:
         try:
             s.bind((host, port))
             print(f"listening on {host}:{port}")
             break
         except:
-            nport = port +1
-            print(f"port {port} is taken, using {nport} instead")
-            port = port +1
+            new_port = port + 1
+            if new_port>PORT+max_tries:
+                print("FATAL: max retries exceeded, quitting")
+                os._exit(-1)
+            print(f"port {port} is taken, using {new_port} instead")
+            port = port + 1
 
     # put the socket into listening mode
     s.listen(5)
