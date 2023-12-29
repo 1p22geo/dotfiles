@@ -1,7 +1,122 @@
 #!/usr/bin/python3
 
 import os
+import subprocess
+import signal
 import random
+import socket
+import threading
+os.chdir(os.getenv("HOME")+"/Music")
+
+pid = 0
+search = ""
+play = ""
+pause = False
+
+print_lock = threading.Lock()
+
+# thread function
+def threaded(c):
+    global search
+    global pid
+    global play
+    global pause
+    while True:
+
+        # data received from client
+        data = c.recv(1024)
+        if not data:
+            print('Bye')
+
+            # lock released on exit
+            print_lock.release()
+            break
+        ret = ""
+        try:
+            cmd = data.decode('utf-8').strip().split(" ")
+            ret += "Command acknowledged, "+ str(cmd)+ "\n"
+            if cmd[0] == "skip":
+                if pid:
+                    os.kill(pid, signal.SIGTERM)
+                pid = 0
+                ret += "skipping playback"
+            if cmd[0] == "search":
+                search = " ".join(cmd[1:]).strip()
+                ret += "changing search string to: "+search
+            if cmd[0] == "get":
+                if cmd[1] == "search":
+                    ret += "search: \""+search+"\""
+                if cmd[1] == "pid":
+                     ret += "pid: "+str(pid)
+                if cmd[1] == "playing":
+                    ret += "playing: \""+play+"\""
+                if cmd[1] == "pause":
+                    if pause:
+                        ret += "paused"
+                    else:
+                        ret += "unpaused"
+            if cmd[0] == "pause":
+                if len(cmd) == 1:
+                    pause = not pause
+                    ret += "Toggling pause, now "
+                    if pause:
+                        if pid:
+                            os.kill(pid, signal.SIGTERM)
+                        pid = 0
+                        ret += "paused"
+                    else:
+                        ret += "unpaused"
+                else:
+                    if cmd[1] == "on":
+                        if pid:
+                            os.kill(pid, signal.SIGTERM)
+                        pid = 0
+                        pause = True
+                        ret += "Pausing"
+                    if cmd[1] == "off":
+                        pause = False
+                        ret += "Unpausing"
+                    else:
+                        ret += "Don't know what this means."
+        except Exception as e:
+            ret += str(e)
+        ret += "\n"
+        c.send(ret.encode("utf-8"))
+
+    # connection closed
+    c.close()
+
+
+def s_thread():
+    host = ""
+
+    # reserve a port on your computer
+    # in our case it is 12345 but it
+    # can be anything
+    port = 6002
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((host, port))
+    print("socket binded to port", port)
+
+    # put the socket into listening mode
+    s.listen(5)
+    print("socket is listening")
+
+    # a forever loop until client wants to exit
+    while True:
+
+        # establish connection with client
+        c, addr = s.accept()
+
+        # lock acquired by client
+        print_lock.acquire()
+        print('Connected to :', addr[0], ':', addr[1])
+
+        # Start a new thread and return its identifier
+        threading.Thread(target=threaded, args=(c,)).start()
+    s.close()
+
+threading.Thread(target=s_thread).start()
 
 filelist = []
 print("Indexing files...")
@@ -15,14 +130,14 @@ for root,_,files in os.walk("."):
 
 
 
+
 while True:
-    search = ""
-    file = random.choice(filelist)
-    try:
-        with open("/tmp/shuffle") as f:
-            search = f.read()
-    except:
-        search = ""
-    if not search in file:
+    if pause:
         continue
-    os.system(f"mplayer \"{file}\"")
+    print("searching for: ",search)
+    filtered = list(filter((lambda x:(search in x.lower())),  filelist))
+    file = random.choice(filtered)
+    play = file
+    proc = subprocess.Popen(["/usr/bin/mplayer", file])
+    pid = proc.pid
+    proc.wait()
