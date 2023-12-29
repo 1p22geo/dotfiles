@@ -1,5 +1,13 @@
 #!/usr/bin/python3
 
+# you can change this to change the listening port
+# note that bshuffle cannot do a clean shutdown yet bc i don't know python sockets well enough, so this port will still be taken after the script stops
+# if you can help, pls send a pull request.
+# if bShuffle cannot bind to this port, it will try the one right after, and so on
+# max_tries controls how many times can it increment the port before stopping
+port = 6002
+max_tries = 10
+
 import os
 import subprocess
 import signal
@@ -12,8 +20,11 @@ pid = 0
 search = ""
 play = ""
 pause = False
+filelist = []
 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print_lock = threading.Lock()
+
 
 # thread function
 def threaded(c):
@@ -21,20 +32,46 @@ def threaded(c):
     global pid
     global play
     global pause
+    global s
+    c.send(b"You are connected to the bShuffle music server, now playing "+play.encode("utf-8")+b"\nbsh> ")
     while True:
 
         # data received from client
         data = c.recv(1024)
         if not data:
-            print('Bye')
-
-            # lock released on exit
             print_lock.release()
             break
         ret = ""
         try:
             cmd = data.decode('utf-8').strip().split(" ")
             ret += "Command acknowledged, "+ str(cmd)+ "\n"
+            if cmd[0] == "help":
+                ret += ("""
+                    bShuffle 0.1 server
+                    
+                    Allowed commands:
+                        help - print this help
+                        skip - skip a song
+                        get - print a value:
+                            get playing - what is playing now
+                            get pause - is the player paused now
+                            get pid - the PID of the mPlayer process
+                            get search - the search pattern
+                            get files - all music files indexed by bShuffle
+                        search - set the search pattern
+                            bShuffle will only play songs matching this pattern now
+                            it's not a regular expression, it's very simple
+                            search asdf
+                                - bShuffle will only play songs with asdf in their name
+                                  search is case insensitive
+                        pause - toggle pause
+                            pause on - set pause
+                            pause off - unpause
+                            pause (without arguments) - toggle pause
+                        exit - exit bShuffle prompt
+                        stop - stop bShuffle server
+                            note that bShuffle will no longer be accepting connections and you will need to restart it
+                """)
             if cmd[0] == "skip":
                 if pid:
                     os.kill(pid, signal.SIGTERM)
@@ -47,7 +84,9 @@ def threaded(c):
                 if cmd[1] == "search":
                     ret += "search: \""+search+"\""
                 if cmd[1] == "pid":
-                     ret += "pid: "+str(pid)
+                    ret += "pid: "+str(pid)
+                if cmd[1] == "files":
+                    ret += "Files: \n"+"\n\t".join(filelist)
                 if cmd[1] == "playing":
                     ret += "playing: \""+play+"\""
                 if cmd[1] == "pause":
@@ -78,9 +117,23 @@ def threaded(c):
                         ret += "Unpausing"
                     else:
                         ret += "Don't know what this means."
+            if cmd[0] == "exit":
+                c.send(b"Understandable, have a nice day.\n")
+                print_lock.release()
+                break
+            if cmd[0] == "stop":
+                c.send(b"shutting down bShuffle...\n")
+                if pid:
+                    os.kill(pid, signal.SIGTERM)
+                    pid = 0
+                s.close()
+                print_lock.release()
+                os._exit(0)
+                
+
         except Exception as e:
             ret += str(e)
-        ret += "\n"
+        ret += "\nbsh> "
         c.send(ret.encode("utf-8"))
 
     # connection closed
@@ -88,15 +141,19 @@ def threaded(c):
 
 
 def s_thread():
-    host = ""
+    global s
+    global port
+    host = "0.0.0.0"
 
-    # reserve a port on your computer
-    # in our case it is 12345 but it
-    # can be anything
-    port = 6002
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((host, port))
-    print("socket binded to port", port)
+    while True:
+        try:
+            s.bind((host, port))
+            print(f"listening on {host}:{port}")
+            break
+        except:
+            nport = port +1
+            print(f"port {port} is taken, using {nport} instead")
+            port = port +1
 
     # put the socket into listening mode
     s.listen(5)
@@ -110,7 +167,7 @@ def s_thread():
 
         # lock acquired by client
         print_lock.acquire()
-        print('Connected to :', addr[0], ':', addr[1])
+        print('Connection from :', addr[0], ':', addr[1])
 
         # Start a new thread and return its identifier
         threading.Thread(target=threaded, args=(c,)).start()
@@ -118,26 +175,23 @@ def s_thread():
 
 threading.Thread(target=s_thread).start()
 
-filelist = []
 print("Indexing files...")
 for root,_,files in os.walk("."):
     for file in files:
         pt = os.path.join(root, file)
         if pt in filelist:
             continue
-        print(pt)
         filelist.append(pt)
-
+print("Files indexed.")
 
 
 
 while True:
     if pause:
         continue
-    print("searching for: ",search)
     filtered = list(filter((lambda x:(search in x.lower())),  filelist))
     file = random.choice(filtered)
     play = file
-    proc = subprocess.Popen(["/usr/bin/mplayer", file])
+    proc = subprocess.Popen(["/usr/bin/mplayer", file], stdout=open("/dev/null", "w+"))
     pid = proc.pid
     proc.wait()
