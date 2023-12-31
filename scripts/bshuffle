@@ -23,7 +23,6 @@ pause = False
 filelist = []
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print_lock = threading.Lock()
 
 
 # thread function
@@ -39,7 +38,6 @@ def threaded(c):
         # data received from client
         data = c.recv(1024)
         if not data:
-            print_lock.release()
             break
         ret = ""
         try:
@@ -119,7 +117,6 @@ def threaded(c):
                         ret += "Don't know what this means."
             if cmd[0] == "exit":
                 c.send(b"Understandable, have a nice day.\n")
-                print_lock.release()
                 break
             if cmd[0] == "stop":
                 c.send(b"shutting down bShuffle...\n")
@@ -127,7 +124,6 @@ def threaded(c):
                     os.kill(pid, signal.SIGTERM)
                     pid = 0
                 s.close()
-                print_lock.release()
                 os._exit(0)
                 
 
@@ -167,8 +163,6 @@ def s_thread():
         # establish connection with client
         c, addr = s.accept()
 
-        # lock acquired by client
-        print_lock.acquire()
         print('Connection from :', addr[0], ':', addr[1])
 
         # Start a new thread and return its identifier
