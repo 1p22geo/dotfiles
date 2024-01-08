@@ -70,7 +70,7 @@ def threaded(c):
                         stop - stop bShuffle server
                             note that bShuffle will no longer be accepting connections and you will need to restart it
                 """)
-            if cmd[0] == "skip":
+            if cmd[0] == "skip" or cmd[0] == '':
                 if pid:
                     os.kill(pid, signal.SIGTERM)
                 pid = 0
