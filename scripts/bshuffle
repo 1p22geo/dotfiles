@@ -1,20 +1,26 @@
 #!/usr/bin/python3
 
 # you can change this to change the listening port
-# note that bshuffle cannot do a clean shutdown yet bc i don't know python sockets well enough, so this port will still be taken after the script stops
+# note that bshuffle cannot do a clean shutdown yet
+# bc i don't know python sockets well enough,
+# so this port will still be taken after the script stops.
+#
 # if you can help, pls send a pull request.
-# if bShuffle cannot bind to this port, it will try the one right after, and so on
+# if bShuffle cannot bind to this port,
+# it will try the one right after, and so on
 # max_tries controls how many times can it increment the port before stopping
-PORT = 6002
-max_tries = 10
-
 import os
 import subprocess
 import signal
 import random
 import socket
 import threading
+import re
 os.chdir(os.getenv("HOME")+"/Music")
+
+
+PORT = 6002
+max_tries = 10
 
 pid = 0
 search = ""
@@ -25,14 +31,19 @@ filelist = []
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-# thread function
+def match(x):
+    if search.startswith('/') and search.endswith('/'):
+        return re.search(search[1:-1], x, re.IGNORECASE)
+    return re.search(search, x, re.IGNORECASE)
+
 def threaded(c):
     global search
     global pid
     global play
     global pause
     global s
-    c.send(b"You are connected to the bShuffle music server, now playing "+play.encode("utf-8")+b"\nbsh> ")
+    c.send(b"You are connected to the bShuffle music server, now playing " +
+           play.encode("utf-8")+b"\nbsh> ")
     while True:
 
         # data received from client
@@ -42,49 +53,59 @@ def threaded(c):
         ret = ""
         try:
             cmd = data.decode('utf-8').strip().split(" ")
-            ret += "Command acknowledged, "+ str(cmd)+ "\n"
+            ret += "Command acknowledged, " + str(cmd) + "\n"
             if cmd[0] == "help":
                 ret += ("""
-                    bShuffle 0.1 server
-                    
-                    Allowed commands:
-                        help - print this help
-                        skip - skip a song
-                        get - print a value:
-                            get playing - what is playing now
-                            get pause - is the player paused now
-                            get pid - the PID of the mPlayer process
-                            get search - the search pattern
-                            get files - all music files indexed by bShuffle
-                        search - set the search pattern
-                            bShuffle will only play songs matching this pattern now
-                            it's not a regular expression, it's very simple
-                            search asdf
-                                - bShuffle will only play songs with asdf in their name
-                                  search is case insensitive
-                        pause - toggle pause
-                            pause on - set pause
-                            pause off - unpause
-                            pause (without arguments) - toggle pause
-                        exit - exit bShuffle prompt
-                        stop - stop bShuffle server
-                            note that bShuffle will no longer be accepting connections and you will need to restart it
-                """)
-            if cmd[0] == "skip" or cmd[0] == '':
+        bShuffle 0.2 server
+        If you are reading this, the music server was installed correctly (TM)
+
+        Allowed commands:
+            help - print this help
+            skip - skip a song
+            get - print a value:
+                get playing - what is playing now
+                get pause - is the player paused now
+                get pid - the PID of the mPlayer process
+                get search - the search pattern
+                get files - all music files indexed by bShuffle
+                get matching - all files matching search
+            search - set the search pattern
+                bShuffle will only play songs matching this pattern
+                it's a case-insensitive regular expression,
+                    you can add a slash at the begining and end,
+                    they will be ignored.
+                search asdf
+                    - bShuffle will only play songs with asdf
+                            in their name
+                    - search is case insensitive
+            pause - toggle pause
+                pause on - set pause
+                pause off - unpause
+                pause (without arguments) - toggle pause
+            exit - exit bShuffle prompt
+            stop - stop bShuffle server
+                note that bShuffle will no longer be accepting
+                    connections and you will need to restart it
+    """)
+            elif cmd[0] == "skip" or cmd[0] == '':
                 if pid:
                     os.kill(pid, signal.SIGTERM)
                 pid = 0
                 ret += "skipping playback"
-            if cmd[0] == "search":
+            elif cmd[0] == "search":
                 search = " ".join(cmd[1:]).strip()
                 ret += "changing search string to: "+search
-            if cmd[0] == "get":
+            elif cmd[0] == "get":
                 if cmd[1] == "search":
                     ret += "search: \""+search+"\""
                 if cmd[1] == "pid":
                     ret += "pid: "+str(pid)
                 if cmd[1] == "files":
-                    ret += "Files: \n"+"\n\t".join(filelist)
+                    ret += "Files: \n\t"+"\n\t".join(filelist)
+                if cmd[1] == "matching":
+                    filtered = list(filter(match,  filelist))
+                    ret += f"Files matching search: \"{search}\": \n\t" +\
+                        "\n\t".join(filtered)
                 if cmd[1] == "playing":
                     ret += "playing: \""+play+"\""
                 if cmd[1] == "pause":
@@ -92,7 +113,7 @@ def threaded(c):
                         ret += "paused"
                     else:
                         ret += "unpaused"
-            if cmd[0] == "pause":
+            elif cmd[0] == "pause":
                 if len(cmd) == 1:
                     pause = not pause
                     ret += "Toggling pause, now "
@@ -115,18 +136,16 @@ def threaded(c):
                         ret += "Unpausing"
                     else:
                         ret += "Don't know what this means."
-            if cmd[0] == "exit":
+            elif cmd[0] == "exit":
                 c.send(b"Understandable, have a nice day.\n")
                 break
-            if cmd[0] == "stop":
+            elif cmd[0] == "stop":
                 c.send(b"shutting down bShuffle...\n")
                 if pid:
                     os.kill(pid, signal.SIGTERM)
                     pid = 0
                 s.close()
                 os._exit(0)
-                
-
         except Exception as e:
             ret += str(e)
         ret += "\nbsh> "
@@ -139,15 +158,15 @@ def threaded(c):
 def s_thread():
     global s
     host = "0.0.0.0"
-    port  = PORT
+    port = PORT
     while True:
         try:
             s.bind((host, port))
             print(f"listening on {host}:{port}")
             break
-        except:
+        except socket.error:
             new_port = port + 1
-            if new_port>PORT+max_tries:
+            if new_port > PORT+max_tries:
                 print("FATAL: max retries exceeded, quitting")
                 os._exit(-1)
             print(f"port {port} is taken, using {new_port} instead")
@@ -169,10 +188,11 @@ def s_thread():
         threading.Thread(target=threaded, args=(c,)).start()
     s.close()
 
+
 threading.Thread(target=s_thread).start()
 
 print("Indexing files...")
-for root,_,files in os.walk("."):
+for root, _, files in os.walk("."):
     for file in files:
         pt = os.path.join(root, file)
         if pt in filelist:
@@ -181,13 +201,16 @@ for root,_,files in os.walk("."):
 print("Files indexed.")
 
 
-
 while True:
     if pause:
         continue
-    filtered = list(filter((lambda x:(search in x.lower())),  filelist))
-    file = random.choice(filtered)
+    filtered = list(filter(match,  filelist))
+    try:
+        file = random.choice(filtered)
+    except IndexError:
+        pass
     play = file
-    proc = subprocess.Popen(["/usr/bin/mplayer", file], stdout=open("/dev/null", "w+"))
+    proc = subprocess.Popen(["/usr/bin/mplayer", file],
+                            stdout=open("/dev/null", "w+"))
     pid = proc.pid
     proc.wait()

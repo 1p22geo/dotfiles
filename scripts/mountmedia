@@ -1,0 +1,1 @@
+sudo mount -o umask=000 /dev/sda1 /media
