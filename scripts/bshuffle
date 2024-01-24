@@ -26,6 +26,7 @@ pid = 0
 search = ""
 play = ""
 pause = False
+pause_lock = threading.Lock()
 filelist = []
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -120,20 +121,30 @@ def threaded(c):
                     if pause:
                         if pid:
                             os.kill(pid, signal.SIGTERM)
+                            pause_lock.acquire()
                         pid = 0
                         ret += "paused"
                     else:
                         ret += "unpaused"
+                        try:
+                            pause_lock.release()
+                        except:
+                            ret += "\nAn error happened. Continuing..."
                 else:
                     if cmd[1] == "on":
                         if pid:
                             os.kill(pid, signal.SIGTERM)
+                            pause_lock.acquire()
                         pid = 0
                         pause = True
                         ret += "Pausing"
-                    if cmd[1] == "off":
+                    elif cmd[1] == "off":
                         pause = False
                         ret += "Unpausing"
+                        try:
+                            pause_lock.release()
+                        except:
+                            ret += "\nThe music is already paused"
                     else:
                         ret += "Don't know what this means."
             elif cmd[0] == "exit":
@@ -203,7 +214,8 @@ print("Files indexed.")
 
 while True:
     if pause:
-        continue
+        pause_lock.acquire()
+        pause_lock.release()
     filtered = list(filter(match,  filelist))
     try:
         file = random.choice(filtered)
