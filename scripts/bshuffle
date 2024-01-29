@@ -20,6 +20,8 @@ os.chdir(os.getenv("HOME")+"/Music")
 
 
 PORT = 6002
+PLAYER_EXEC1="C:\\Users\\BG\\Documents\\epicki_folder\\mplayer\\mplayer.exe"
+PLAYER_EXEC2="/usr/bin/mplayer"
 max_tries = 10
 
 pid = 0
@@ -222,7 +224,12 @@ while True:
     except IndexError:
         pass
     play = file
-    proc = subprocess.Popen(["/usr/bin/mplayer", file],
+    try:
+        proc = subprocess.Popen([PLAYER_EXEC1, file],
                             stdout=open("/dev/null", "w+"))
+    except: 
+        proc = subprocess.Popen([PLAYER_EXEC2, file],
+                            stdout=open("/dev/null", "w+"))
+
     pid = proc.pid
     proc.wait()
