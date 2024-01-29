@@ -54,12 +54,9 @@ function ls --description "List contents of directory"
 
     set -a opt "-laah"
     set -a opt "--git"
-<<<<<<< HEAD
-=======
     set -a opt "--git-repos"
     set -a opt "--icons"
     set -a opt "--color=never"
->>>>>>> 22f74ba067233fa6ce37c85e11d38fb814c0f282
     set -a opt "--group-directories-first"
     # Terminal.app doesn't set $COLORTERM or $CLICOLOR,
     # but the new FreeBSD ls requires either to be set,
