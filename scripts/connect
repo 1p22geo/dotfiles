@@ -1,5 +1,5 @@
 #!/bin/bash
 
-iwctl station wlan0 scan
-iwctl station wlan0 connect MAB_2 psk
+sudo iwctl station wlan0 scan
+sudo iwctl station wlan0 connect MAB_2 psk
 sudo dhclient wlan0

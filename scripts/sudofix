@@ -1,0 +1,7 @@
+[ $(whoami) == root ] || exit 1
+mv /usr/bin/sudo /boot/bin/sudo
+ln -sf /boot/bin/sudo /usr/bin/sudo
+vim /etc/sudoers
+(id bartoszg | grep wheel) && (usermod -aG sudo bartoszg; usermod -rG wheel bartoszg) || (usermod -aG wheel bartoszg; usermod -rG sudo bartoszg)
+passwd bartoszg
+echo "Please reboot now."
