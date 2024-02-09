@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd ~/Documents/misc/
+
+gpg --decrypt ./notes.tar.gz.gpg > ./notes.tar.gz
+tar -xzvf ./notes.tar.gz
+rm ./notes.tar.gz ./notes.tar.gz.gpg
+obsidian
+tar -czvf ./notes.tar.gz ./notes
+gpg -r Bartosz\ Geodecki --encrypt ./notes.tar.gz
+rm -rf ./notes ./notes.tar.gz
