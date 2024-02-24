@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker ps -a | grep -iP 'created|exited' | awk '($1!="CONTAINER"){print $1}' | xargs -I {} docker rm {}
