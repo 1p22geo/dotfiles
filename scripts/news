@@ -1,0 +1,1 @@
+CURL_CA_BUNDLE=~/.newsboat/root.pem /usr/bin/newsboat;

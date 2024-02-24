@@ -1,3 +1,3 @@
 function cronstat
-  journalctl -u cronie.service
+  sudo journalctl -u cronie.service
 end

@@ -1,0 +1,5 @@
+#!/bin/bash
+for (( ;; )) do
+  newsboat -x reload ; (newsboat -x print-unread | grep "0 unread") || notify-send "New RSS messages" "$(newsboat -x print-unread)"
+  sleep 300
+done
