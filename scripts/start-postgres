@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sudo ln -sf /boot/bin/postgres /run/postgresql 
+sudo -u postgres pg_ctl -D /var/lib/postgres/data/ start
+
+export MSF_DATABASE_CONFIG=~/.msf4/database.yml

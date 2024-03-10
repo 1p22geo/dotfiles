@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[ -d /run/postgresql/ ] || start-postgresql
+
+MSF_DATABASE_CONFIG=~/.msf4/database.yml armitage

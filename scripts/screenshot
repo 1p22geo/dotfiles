@@ -1,0 +1,6 @@
+#!/bin/bash
+
+TEMPDIR=$(mktemp -d)
+grimblast save area $TEMPDIR/screenshot.png
+ffmpeg -i $TEMPDIR/screenshot.png $TEMPDIR/screenshot.jpg
+firefox $TEMPDIR/screenshot.png

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ sudo bash -c "pacman -Syu | grep \"exists in filesystem\" | awk -F \":\" '{print \$1}' | sort | uniq | xargs -I {} pacman --noconfirm -S {} --overwrite \"*\" "
