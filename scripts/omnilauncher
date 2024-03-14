@@ -1,0 +1,41 @@
+#!/bin/bash
+
+launch_equation() {
+  kitty -e bash -c "
+	cd ~/Documents/code/equation/
+	nvim
+  "
+}
+
+launch_dotfiles() {
+  kitty -e bash -c "
+	cd ~/Documents/dotfiles/
+	nvim
+  "
+}
+
+launch_THM() {
+  kitty -e bash -c "
+  echo search infinitode>/dev/tcp/localhost/6002
+	cd ~/Documents/THM/boxes/
+  echo Log in to THM, start a box...
+  echo What box are we doing today? 
+  read BOX
+  mkdir \$BOX
+  cd \$BOX
+  tmux new-session -d sudo openvpn ~/Documents/THM/europe_02.opvpn
+  tmux split-window -v /usr/bin/vim .attackrc
+  tmux select-pane -t %0
+  tmux split-window -h python -m http.server
+  tmux select-pane -t %0
+  tmux attach
+  "
+}
+
+PROJECTS=("dotfiles" "equation" "THM")
+
+LAUNCH=$((for PROJ in ${!PROJECTS[@]}; do
+	echo ${PROJECTS[$PROJ]}
+done) | wofi --show dmenu)
+
+launch_$LAUNCH
