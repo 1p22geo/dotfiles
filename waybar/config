@@ -9,6 +9,7 @@
     "custom/separator",
     "tray",
     "custom/separator",
+    "custom/gpgkey"
   ],
   "modules-center": [
   ],
@@ -57,6 +58,12 @@
     "format": " {} ",
     "interval": 1,
     "on-click":"/bin/bash -c \"echo >/dev/tcp/localhost/6002\""
+  },
+  "custom/gpgkey": {
+    "exec":"gpg-connect-agent 'keyinfo --list' /bye 2>&1 | grep \"\\- 1 P\" >/dev/null && echo \"[key]\"",
+    "format":"{}",
+    "interval": 10,
+    "on-click": "gpg-connect-agent 'reloadagent' /bye"
   },
   "hyprland/workspaces": {
     "format": "{icon}",
