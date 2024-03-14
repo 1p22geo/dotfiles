@@ -20,8 +20,8 @@ os.chdir(os.getenv("HOME")+"/Music")
 
 
 PORT = 6002
-PLAYER_EXEC1="C:\\Users\\BG\\Documents\\epicki_folder\\mplayer\\mplayer.exe"
-PLAYER_EXEC2="/usr/bin/mplayer"
+PLAYER_EXEC1 = "C:\\Users\\BG\\Documents\\epicki_folder\\mplayer\\mplayer.exe"
+PLAYER_EXEC2 = "/usr/bin/mplayer"
 max_tries = 10
 
 pid = 0
@@ -38,6 +38,27 @@ def match(x):
     if search.startswith('/') and search.endswith('/'):
         return re.search(search[1:-1], x, re.IGNORECASE)
     return re.search(search, x, re.IGNORECASE)
+
+
+saving = False
+
+
+def savedata():
+    global saving
+    if saving:
+        return  # someone else is saving rn, no need for another one
+    saving = True
+    status = "[PLAYING]" if not pause else "[PAUSED]"
+    with open("/tmp/bshuffle-rn", "w") as f:
+        f.write(
+            f"""{status}
+search:"{search}"
+pid:{pid}
+playing:"{play}"
+paused:{pause}
+""")
+    saving = False
+
 
 def threaded(c):
     global search
@@ -97,6 +118,7 @@ def threaded(c):
                 ret += "skipping playback"
             elif cmd[0] == "search":
                 search = " ".join(cmd[1:]).strip()
+                savedata()
                 ret += "changing search string to: "+search
             elif cmd[0] == "get":
                 if cmd[1] == "search":
@@ -149,6 +171,7 @@ def threaded(c):
                             ret += "\nThe music is already paused"
                     else:
                         ret += "Don't know what this means."
+                savedata()
             elif cmd[0] == "exit":
                 c.send(b"Understandable, have a nice day.\n")
                 break
@@ -224,12 +247,13 @@ while True:
     except IndexError:
         pass
     play = file
+    savedata()
     try:
         proc = subprocess.Popen([PLAYER_EXEC1, file],
-                            stdout=open("/dev/null", "w+"))
-    except: 
+                                stdout=open("/dev/null", "w+"))
+    except:
         proc = subprocess.Popen([PLAYER_EXEC2, file],
-                            stdout=open("/dev/null", "w+"))
+                                stdout=open("/dev/null", "w+"))
 
     pid = proc.pid
     proc.wait()

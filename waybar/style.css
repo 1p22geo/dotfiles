@@ -1,134 +1,68 @@
 * {
-    border: none;
-    border-radius: 0;
-    font-family: "3270 Nerd Font SemCond";
-    font-size: 10px;
-    min-height: 0;
-}
-window#waybar {
-    background-color: #eeeeee;
-    border-bottom: 2px solid #ffffff;
-    border-top: 2px solid #ffffff;
-    color: #000000; 
-    transition-property: background-color;
-    transition-duration: .5s;
+  font-family: "3270 Nerd Font Propo";
 }
 
-window#waybar.hidden {
-    opacity: 0.2;
-}
-
-/*
-window#waybar.empty {
-    background-color: transparent;
-}
-window#waybar.solo {
-    background-color: #FFFFFF;
-}
-*/
-
-#workspaces button {
-    padding-left: 10px;
-    padding-right: 10px;
-    /*padding-top: 5px;
-    padding-bottom: 5px;*/
-
-    background-color: transparent;
-    color: inherit;
-    font-weight: 600;
-    border-left: 2px solid #ffffff;
-}
-
-#workspaces button:first-child {
-    border-left: 0;
-}
-
-/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-#workspaces button:hover {
-    background: rgba(0, 0, 0, 0.2);
-    box-shadow: inherit;
-    text-shadow: inherit;
-    border-bottom: 3px solid #ffffff;
-    border-top: 3px solid #ffffff;
-}
-
-#workspaces button.focused {
-    background: rgba(0, 0, 0, 0.2);
-
-    border-top: 3px solid #ffffff;
-    border-bottom: 3px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #ffffff;
-
-    color: #eeeeee;
-}
-
-#workspaces button.focused + button {
-    border-left: none;
-}
-
-#workspaces button.focused:first-child {
-    border-left: none;
-}
-
-#workspaces button.focused:last-child {
-    border-right: none;
-}
-
-
-#workspaces button.urgent {
-    background-color: #dddddd;
-}
-
-#mpd, #pulseaudio, #network, #cpu, #memory, #temperature, #clock, #window {
-    padding-left: 8px;
-    padding-right: 8px;
-    /*
-    padding-top: 5px;
-    padding-bottom: 5px;
-    */
-
-    background-color: transparent;
-    color: inherit;
-    font-weight: 600;
-    border-left: 2px solid #ffffff;
-}
-
-#tray {
-    padding-left: 8px;
-    padding-right:8px;
-    min-width: 40px;
-    border-left: 2px solid #ffffff;
-    font-size: 10px;
-}
-
-#window {
-    min-width: 500px;
+#waybar {
+  background: #000;
+  color: #fff;
 }
 
 #clock {
-    font-size: 10px;
+  color: #fff;
 }
 
-#mpd.playing {
-
-    background: repeating-linear-gradient(
-          45deg,
-          #453e48,
-	  #453e48 12px,
-	  #3d3540 12px,
-	  #3d3540 24px
-    );
-    background-size: 120% 100%;
-    animation: scroll 0.5s linear infinite;
-
+#tray {
+  padding-left: 4px;
 }
 
-@keyframes scroll {
-    from {
-        background-position: -33.941125497px 0;
-    }
-    to {
-        background-position: 0 0;
-    }
+#workspaces button:hover {
+  background-color: transparent;
+}
+
+#workspaces button {
+  color: #737373;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 0px;
+}
+
+#workspaces button:hover {
+  background-color: #262626;
+}
+
+#workspaces button.active {
+  color: #84cc16;
+}
+
+#window {
+  color: #fff;
+}
+
+#network {
+  color: #3b82f6;
+  margin-right: 8px;
+}
+
+#pulseaudio {
+  color: #14b8a6;
+  margin-right: 4px;
+}
+
+#cpu {
+  color: #0ea5e9;
+  margin-right: 4px;
+}
+
+#temperature {
+  color: #eab308;
+  margin-right: 4px;
+}
+
+#memory {
+  color: #d946ef;
+  margin-right: 4px;
+}
+
+#custom-powermenu {
+  color: #f43f5e;
 }

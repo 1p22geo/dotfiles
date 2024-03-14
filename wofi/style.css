@@ -1,0 +1,35 @@
+window {
+  background-color: #171717;
+}
+
+* {
+  font-family: "3270 Nerd Font";
+  font-size: 20;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+#input {
+  background-color: #262626;
+  outline: none;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  font-size: 1rem;
+  padding: 0.5rem;
+}
+
+#inner-box {
+  margin: 0.5rem;
+  font-size: 1rem;
+}
+
+#img {
+  margin: 10px 10px;
+}
+
+#entry:selected {
+  background-color: #262626;
+  outline: none;
+}

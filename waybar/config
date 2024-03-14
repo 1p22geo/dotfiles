@@ -7,15 +7,16 @@
     "custom/separator",
     "hyprland/workspaces",
     "custom/separator",
-    "tray"
+    "tray",
+    "custom/separator",
   ],
   "modules-center": [
-    "hyprland/window"
   ],
   "modules-right": [
-    "temperature",
-    "memory",
-    "cpu",
+    "custom/bpause",
+    "custom/bsearch",
+    "custom/bshuffle",
+    "custom/separator",
     "pulseaudio",
     "battery",
     "network",
@@ -34,10 +35,28 @@
     // 24 hour
     // "format": " {:%H:%M} ",
     // 12 hour
-    "format": " 󰸗 {:%I:%M %p} ",
+    "format": " 󰸗 {:%Y-%m-%dT%H:%M} ",
     "interval": 60,
     "tooltip": true,
-    "tooltip-format": "{:%d %B %H:%M}"
+    "tooltip-format": "{:%Y-%m-%dT%H:%M}"
+  },
+  "custom/bpause": {
+   "exec":"cat /tmp/bshuffle-rn | python -c 'print(input())' " ,
+    "format": "{} ",
+    "interval": 1,
+    "on-click":"/bin/bash -c \"echo pause>/dev/tcp/localhost/6002\""
+  },
+  "custom/bsearch": {
+   "exec":"cat /tmp/bshuffle-rn | grep search" ,
+    "format": "bsh({})> ",
+    "interval": 1,
+    "on-click":"kitty -e /bin/bash -c \"/usr/bin/rlwrap nc localhost 6002\""
+  },
+  "custom/bshuffle": {
+   "exec": "cat /tmp/bshuffle-rn | grep playing",
+    "format": " {} ",
+    "interval": 1,
+    "on-click":"/bin/bash -c \"echo >/dev/tcp/localhost/6002\""
   },
   "hyprland/workspaces": {
     "format": "{icon}",
@@ -93,14 +112,12 @@
       // "110": "十"
 	  }
   },
-  "hyprland/window": {
-    "format": "{}"
-  },
   "network": {
     "format": " 󰖩",
     // "tooltip": "{ifname}",
-    "tooltip-format": "{essid}",
-    "interval": 2
+    "tooltip-format": "{ifname}: {essid} ({signalStrength}%) {ipaddr}/{cidr}",
+    "interval": 2,
+    "on-click": "kitty -e /home/bartoszg/Documents/dotfiles/scripts/connect"
   },
   "temperature": {
     "format": "{icon} {temperatureC}°C ",
@@ -123,7 +140,7 @@
   "pulseaudio": {
     "format": " {volume}%",
     "scroll-step": 1,
-    "on-click": "pavucontrol"
+    "on-click": "bash -c \"pactl set-sink-volume $(pactl get-default-sink) 0%\""
   },
   "battery": {
     "format": "{capacity}% {icon}",
@@ -138,7 +155,7 @@
   "custom/powermenu": {
     "format": "  ",
     "tooltip": false,
-    "on-click": "exec wlogout -p layer-shell"
+    "on-click": "exec poweroff"
   }
 }
 
