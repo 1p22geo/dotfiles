@@ -20,7 +20,7 @@ os.chdir(os.getenv("HOME")+"/Music")
 
 
 PORT = 6002
-PLAYER_EXEC1 = "C:\\Users\\BG\\Documents\\epicki_folder\\mplayer\\mplayer.exe"
+PLAYER_EXEC1 = "C:\\Users\\bartoszg\\Documents\\epicki_folder\\mplayer\\mplayer.exe"
 PLAYER_EXEC2 = "/usr/bin/mplayer"
 max_tries = 10
 
@@ -60,6 +60,20 @@ paused:{pause}
     saving = False
 
 
+def indexfiles():
+    global filelist
+    filelist = []
+    for root, _, files in os.walk("."):
+        for file in files:
+            pt = os.path.join(root, file)
+            if pt in filelist:
+                continue
+            filelist.append(pt)
+
+
+indexfiles()
+
+
 def threaded(c):
     global search
     global pid
@@ -86,6 +100,7 @@ def threaded(c):
         Allowed commands:
             help - print this help
             skip - skip a song
+            index - index the files again
             get - print a value:
                 get playing - what is playing now
                 get pause - is the player paused now
@@ -138,6 +153,10 @@ def threaded(c):
                         ret += "paused"
                     else:
                         ret += "unpaused"
+            elif cmd[0] == "index":
+                ret += "Indexing files, hold on...\n"
+                indexfiles()
+                ret += "Done!"
             elif cmd[0] == "pause":
                 if len(cmd) == 1:
                     pause = not pause
