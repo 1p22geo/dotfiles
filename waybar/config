@@ -124,7 +124,7 @@
     // "tooltip": "{ifname}",
     "tooltip-format": "{ifname}: {essid} ({signalStrength}%) {ipaddr}/{cidr}",
     "interval": 2,
-    "on-click": "kitty -e /home/bartoszg/Documents/dotfiles/scripts/connect"
+    "on-click": "kitty -e iwctl"
   },
   "temperature": {
     "format": "{icon} {temperatureC}°C ",
@@ -162,7 +162,7 @@
   "custom/powermenu": {
     "format": "  ",
     "tooltip": false,
-    "on-click": "exec poweroff"
+    "on-click": "kitty -e btop"
   }
 }
 
