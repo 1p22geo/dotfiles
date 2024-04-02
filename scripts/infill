@@ -1,0 +1,72 @@
+#!/usr/bin/python
+import requests
+import os
+
+lineno = -1
+col = -1
+filename = None
+host = None
+try:
+    filename = os.sys.argv[1]
+    pos = os.sys.argv[2].split(":")
+    lineno = int(pos[0])
+    col = int(pos[1])
+    host = os.getenv("OLLAMA_HOST") or "127.0.0.1:11434"
+except Exception:
+    print("""
+    Infill code using Ollama.
+    Will send requests to $OLLAMA_HOST or 127.0.0.1:11434 if not present
+    Respects the same environment variables as /usr/bin/ollama
+
+    Note that this script DOES alter existing files.
+    I mean, this is what autocompletion is about.
+
+    HIGHLY EXPERIMENTAL, DO NOT USE WITHOUT
+    GIT OR BACKUPS
+
+    Usage:
+    infill <filename> <lineno>:<col>
+
+    Examples:
+    infill script.py 21:3
+    # autocomplete using AI if cursor is at line 21, character 3
+    """)
+
+
+lines = []
+
+try:
+    with open(filename, "r") as f:
+        lines = f.readlines()
+except OSError as e:
+    print(e)
+
+os.system(f"notify-send 'Staring infill {filename} {lineno}:{col}'")
+
+
+pre = "\n".join(lines[:lineno-1])
+suf = "\n".join(lines[lineno-1:])
+
+line = lines[lineno-1]
+
+pre = pre + "\n" + line[:col]
+suf = line[col:] + "\n" + suf
+
+prompt = f"<PRE> {pre} <SUF> {suf} <MID>"
+
+res = requests.post(f"http://{host}/api/generate",
+                    json={
+                        "model": "codellama",
+                        "prompt": prompt,
+                        "stream": False
+                    })
+
+out = res.json()['response']
+
+content = pre + out + suf
+
+with open(filename, "w") as f:
+    f.write(content.replace("\n\n", "\n"))
+
+
+os.system(f"notify-send 'DONE infill {filename} {lineno}:{col}'")

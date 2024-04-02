@@ -167,7 +167,7 @@ SETUVAR fish_pager_color_selected_background:\x2d\x2dbackground\x3dbrblack
 SETUVAR fish_pager_color_selected_completion:\x1d
 SETUVAR fish_pager_color_selected_description:\x1d
 SETUVAR fish_pager_color_selected_prefix:\x1d
-SETUVAR fish_user_paths:/opt/impacket/examples\x1e/home/bartoszg/Documents/dotfiles/scripts\x1e/home/bartoszg/Documents/scripts
+SETUVAR fish_user_paths:/home/bartoszg/\x2elocal/bin\x1e/opt/impacket/examples\x1e/home/bartoszg/Documents/dotfiles/scripts\x1e/home/bartoszg/Documents/scripts
 SETUVAR tide_aws_bg_color:FF9900
 SETUVAR tide_aws_color:232F3E
 SETUVAR tide_aws_icon:\uf270
