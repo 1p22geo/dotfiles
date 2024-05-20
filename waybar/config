@@ -9,7 +9,8 @@
     "custom/separator",
     "tray",
     "custom/separator",
-    "custom/gpgkey"
+    "custom/gpgkey",
+    "custom/pacdb"
   ],
   "modules-center": [
   ],
@@ -64,6 +65,11 @@
     "format":"{}",
     "interval": 10,
     "on-click": "gpg-connect-agent 'reloadagent' /bye"
+  },
+  "custom/pacdb": {
+    "exec":"[ -f /var/lib/pacman/db.lck ] && echo '[pac.db]'",
+    "format":"{}",
+    "interval": 10,
   },
   "hyprland/workspaces": {
     "format": "{icon}",
