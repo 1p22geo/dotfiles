@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# stacja 5G to mój hotspot telefonu
+NETWORKS=("MAB_2" "zsti_spot" "Stacja 5G (zabija ludzi)")
+
+CONN=$((for NET in ${!NETWORKS[@]}; do
+	echo ${NETWORKS[$NET]}
+done) | wofi --show dmenu)
+
+
 sudo iwctl station wlan0 scan
 sleep 1
-sudo iwctl station wlan0 connect MAB_2 psk
-sleep 1
-sudo dhclient wlan0
+sudo iwctl station wlan0 connect "$CONN"
