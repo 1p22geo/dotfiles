@@ -1,21 +1,8 @@
-vim.keymap.set({ "n", "v" }, "<C-x>", ":Gen<CR>")
-
-vim.keymap.set({ "n", "i" }, "<C-a>", function()
-  local current_win = vim.api.nvim_get_current_win()
-  local filename = vim.fn.expand("%:p")
-  local pos = vim.api.nvim_win_get_cursor(current_win)
-  vim.notify(string.format("Starting infill %s %s:%s`", filename, tostring(pos[1]), tostring(pos[2])))
-  vim.api.nvim_cmd(
-    vim.api.nvim_parse_cmd(string.format("!infill %s %s:%s", filename, tostring(pos[1]), tostring(pos[2])), {}),
-    {}
-  )
-  vim.notify(string.format("DONE infill %s %s:%s`", filename, tostring(pos[1]), tostring(pos[2])))
-end)
 return {
   {
     "David-Kunz/gen.nvim",
     opts = {
-      model = "codellama:34b", -- The default model to use.
+      model = "codellama", -- The default model to use.
       host = "minisforum", -- The host running the Ollama service.
       port = "9000", -- The port on which the Ollama service is listening.
       quit_map = "q", -- set keymap for close the response window

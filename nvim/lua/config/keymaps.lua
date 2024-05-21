@@ -8,3 +8,5 @@ vim.keymap.set("n", "S", "yyP", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-j>", ":m .+1<CR>==", { noremap = true, silent = true })
 -- K to move the current line up
 vim.keymap.set("n", "<C-k>", ":m .-2<CR>==", { noremap = true, silent = true })
+
+vim.keymap.set({ "n", "v" }, "<C-x>", ":Gen<CR>")
