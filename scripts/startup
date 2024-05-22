@@ -1,0 +1,6 @@
+#!/bin/bash
+
+bshuffle &
+reloadnews &
+proxychains4-daemon &
+kitty -e /bin/bash -c "connect && /usr/bin/mailsync && neomutt; news; sudo pacman -Syu --overwrite=\"*\""
