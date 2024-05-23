@@ -8,6 +8,6 @@ CONN=$((for NET in ${!NETWORKS[@]}; do
 done) | wofi --show dmenu)
 
 
-sudo iwctl station wlan0 scan
+iwctl station wlan0 scan
 sleep 1
-sudo iwctl station wlan0 connect "$CONN"
+iwctl station wlan0 connect "$CONN"

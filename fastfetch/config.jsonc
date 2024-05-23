@@ -38,74 +38,74 @@
         },
         {
             "type": "datetime",
-            "key": "🗓 Date/time",
+            "key": "[] Date/time",
             "keyColor": "green"
         },
         {
             "type": "weather",
-            "key": "│ ├🌧 Weather",
+            "key": "│ ├ Weather",
             "keyColor": "green"
         },
         {
             "type": "command",
-            "key": "│ └✉ Mail",
+            "key": "│ └ Mail",
             "shell":"/bin/fish",
             "text":"listmail",
             "keyColor": "green"
         },
         {
             "type": "os",
-            "key": " OS",
+            "key": "[] OS",
             "keyColor": "yellow"
         },
         {
             "type": "bios",
-            "key": "│ ├ BIOS",
+            "key": "│ ├ BIOS",
             "keyColor": "yellow"
         },
         {
             "type": "kernel",
-            "key": "│ ├ Kernel",
+            "key": "│ ├ Kernel",
             "keyColor": "yellow"
         },
         {
             "type": "processes",
-            "key": "│ ├ Processes",
+            "key": "│ ├ Processes",
             "keyColor": "yellow"
         },
         {
             "type": "packages",
-            "key": "│ ├󰏖 Packages",
+            "key": "│ ├ Packages",
             "keyColor": "yellow"
         },
         {
             "type": "shell",
-            "key": "│ └ Shell",
+            "key": "│ └ Shell",
             "keyColor": "yellow"
         },
         {
             "type": "wm",
-            "key": " DE/WM",
+            "key": "[] DE/WM",
             "keyColor": "blue"
         },
         {
             "type": "lm",
-            "key": "│ ├󰧨 LM",
+            "key": "│ ├ LM",
             "keyColor": "blue"
         },
         {
             "type": "icons",
-            "key": "│ ├󰀻 Icons",
+            "key": "│ ├ Icons",
             "keyColor": "blue"
         },
         {
             "type": "terminal",
-            "key": "│ ├ Terminal",
+            "key": "│ ├ Terminal",
             "keyColor": "blue"
         },
         {
             "type": "host",
-            "key": "💻 PC",
+            "key": "[] PC",
             "keyColor": "green"
         },
         {
@@ -120,64 +120,64 @@
         },
         {
             "type": "disk",
-            "key": "│ ├ Disk",
+            "key": "│ ├ Disk",
             "keyColor": "green"
         },
         {
             "type": "memory",
-            "key": "│ ├𓇲 RAM",
+            "key": "│ ├ RAM",
             "keyColor": "green"
         },
         {
             "type": "swap",
-            "key": "│ ├󰓡 Swap",
+            "key": "│ ├ Swap",
             "keyColor": "green"
         },
         {
             "type": "uptime",
-            "key": "│ ├󰅐 Uptime",
+            "key": "│ ├ Uptime",
             "keyColor": "green"
         },
         {
             "type": "display",
-            "key": "│ └󰍹 Display",
+            "key": "│ ├ Display",
             "keyColor": "green"
         },
         {
             "type": "wifi",
-            "key": "🖧  Network",
+            "key": "[]  Network",
             "keyColor": "red"
         },
         {
             "type": "command",
-            "key": "│ ├MAC",
+            "key": "│ ├ MAC",
             "shell":"/bin/fish",
             "text":"ifconfig -a wlan0 | grep ether | cut -f 10 -d \" \"",
             "keyColor": "red"
         },
         {
             "type": "localip",
-            "key": "│ ├IP",
+            "key": "│ ├ IP",
             "keyColor": "red"
         },
         {
             "type": "publicip",
-            "key": "│ └IP",
+            "key": "│ └ IP",
             "keyColor": "red"
         },
         {
             "type": "sound",
-            "key": " Sound",
+            "key": "[] Sound",
             "keyColor": "cyan"
         },
         {
             "type": "player",
-            "key": "│ ├󰥠 Player",
+            "key": "│ ├ Player",
             "keyColor": "cyan"
         },
         {
             "type": "media",
-            "key": "│ └󰝚 Media",
+            "key": "│ └ Media",
             "keyColor": "cyan"
         },
         {
