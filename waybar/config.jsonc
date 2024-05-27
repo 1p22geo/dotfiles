@@ -136,7 +136,7 @@
     "hyprland/workspaces": {
         "disable-scroll": true,
         "rotate": 0,
-        "all-outputs": false,
+        "all-outputs": true,
         "active-only": false,
         "on-click": "activate",
         "disable-scroll": false,

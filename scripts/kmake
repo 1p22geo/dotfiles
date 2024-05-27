@@ -1,0 +1,42 @@
+#!/usr/bin/python
+import os
+
+
+def cmd(q):
+    print("Executing:")
+    print("```")
+    print(q)
+    print("```")
+    os.system(q)
+
+
+try:
+    conf = os.sys.argv[1]
+    open(conf).close()
+except Exception:
+    print("Failed opening config file.")
+    print()
+    print("Usage:")
+    prog = os.sys.argv[0]
+    print(f"     {prog} /path/to/.config")
+    print()
+    print("Environment variables:")
+    print("     LINUX_SOURCE_DIR: the directory containing the Linux source. If nonexistent, will be `mkdir` and `git clone` 'd ")
+    os._exit(1)
+linux = os.getenv("LINUX_SOURCE_DIR", "~/Documents/linux")
+try:
+    open(os.path.join(linux, "Makefile")).close()
+except Exception:
+    print("Failed opening ", os.path.join(linux, "Makefile"))
+    print("Cloning Linux to ", os.path.join(linux))
+    accept = input("Clone linux now? [y/n]").lower().startswith("y")
+    if not accept:
+        os._exit(2)
+    cmd(f"git clone https://github.com/torvalds/linux {linux}")
+
+print("Sources and config ready.")
+
+cmd(f"cp {conf} {linux}/.config")
+cmd(f"make -C {linux} oldconfig")
+cmd(f"make -C {linux} -j32")
+cmd(f"cp {linux}/arch/x86_64/boot/bzImage ./vmlinuz")
