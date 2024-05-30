@@ -1,0 +1,14 @@
+[Unit]
+Description=bShuffle music server
+After=graphical-session.target
+
+[Service]
+ExecCondition=/bin/sh -c 'pactl info'
+ExecStart=/usr/bin/env bshuffle
+ExecReload=/bin/sh -c '/bin/kill -HUP $MAINPID; killall mplayer'
+ExecStop=/bin/sh -c '/bin/kill -HUP $MAINPID; killall mplayer'
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=graphical-session.target
