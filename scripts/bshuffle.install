@@ -1,0 +1,4 @@
+#!/bin/bash
+sudo cp ./bshuffle.service /usr/lib/systemd/user/bshuffle.service
+systemctl --user daemon-reload
+echo 'Start bShuffle by running `systemctl --user enable --now bshuffle`'
