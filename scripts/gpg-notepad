@@ -1,11 +1,13 @@
 #!/bin/bash
 
-cd ~/Documents/misc/
-
-gpg --decrypt ./notes.tar.gz.gpg > ./notes.tar.gz
+export TEMP=/tmp/secret/.notes/1p22geo-notes-temp-dir
+mkdir -p $TEMP
+cd $TEMP
+gpg --decrypt ~/Documents/misc/notes.tar.gz.gpg >./notes.tar.gz
 tar -xzvf ./notes.tar.gz
-rm ./notes.tar.gz ./notes.tar.gz.gpg
 obsidian
 tar -czvf ./notes.tar.gz ./notes
 gpg -r Bartosz\ Geodecki --encrypt ./notes.tar.gz
-rm -rf ./notes ./notes.tar.gz
+mv ./notes.tar.gz.gpg ~/Documents/misc/notes.tar.gz.gpg
+cd /tmp
+rm -rf $TEMP

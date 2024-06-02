@@ -14,6 +14,7 @@ alias lt="ls --tree"
 # Handy change dir shortcuts
 abbr .. 'cd ..'
 abbr ... 'cd ../..'
+abbr .2 'cd ../..'
 abbr .3 'cd ../../..'
 abbr .4 'cd ../../../..'
 abbr .5 'cd ../../../../..'
