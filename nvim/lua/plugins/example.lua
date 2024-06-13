@@ -91,7 +91,20 @@ return {
       ---@type lspconfig.options
       servers = {
         -- pyright will be automatically installed with mason and loaded with lspconfig
-        pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              venvPath = "~/.conda/envs/",
+              analysis = {},
+              pythonPath = "python",
+            },
+            pyright = {
+              disableOrganizeImports = false,
+              disableLanguageServices = false,
+              disableTaggedHints = false,
+            },
+          },
+        },
       },
     },
   },
