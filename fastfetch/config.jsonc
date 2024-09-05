@@ -42,11 +42,6 @@
             "keyColor": "green"
         },
         {
-            "type": "weather",
-            "key": "│ ├ Weather",
-            "keyColor": "green"
-        },
-        {
             "type": "command",
             "key": "│ └ Mail",
             "shell":"/bin/fish",
