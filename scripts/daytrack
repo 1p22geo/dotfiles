@@ -157,6 +157,8 @@ def start_cycle(x: dict, path):
 
     time.sleep(30*60)
 
+    x = inc_set_elem(x, path)
+
     pause = meta["break_music"]["value"] if meta["break_music"] else search
     run_command_stdin(
         ["bash", "-c", "cat > /dev/tcp/localhost/6002"], f"search {pause}\n")
@@ -165,8 +167,6 @@ def start_cycle(x: dict, path):
     run_command_stdin(["notify-send", "Go take a break"], "")
 
     time.sleep(10*60)
-
-    x = inc_set_elem(x, path)
 
     return x
 
