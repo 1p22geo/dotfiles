@@ -1,0 +1,209 @@
+#!/usr/bin/env python
+
+import json
+import os
+import argparse
+import time
+import subprocess
+
+
+def run_command_stdin(command: list[str], stdin: str):
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE,
+                            stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out = proc.communicate(input=stdin.encode())
+    return out
+
+
+os.chdir(os.getenv("HOME"))
+dir = os.getenv("DTK_HOME") if os.getenv(
+    "DTK_HOME") else ".local/share/daytrack"
+try:
+    os.makedirs(dir)
+except FileExistsError:
+    pass
+data = None
+
+try:
+    with open(f"{dir}/daytrack.json", "r") as f:
+        data = json.load(f)
+except FileNotFoundError:
+    data = {}
+
+
+parser = argparse.ArgumentParser("daytrack")
+
+parser.add_argument("action", choices=[
+                    "show", "add", "inc", "delete", "set", "meta", "start", "track"],
+                    help="The action to execute")
+
+parser.add_argument("args", nargs="*")
+
+args = parser.parse_args()
+
+
+def print_set(x: dict, tabs=0):
+    tab = "  "*tabs
+    for key in x.keys():
+        cycles = x[key]["cycles"]
+        end = " ↓" if "sub" in x[key] and x[key]["sub"] else ""
+        print(f"{tab}{key}: {cycles}{end}")
+        if "sub" in x[key]:
+            print_set(x[key]["sub"], tabs+1)
+
+
+def add_to_set(x: dict, path: str, item: int):
+    path = path.split(".")
+    tree = x
+    for segment in path:
+        if "sub" in tree:
+            tree = tree["sub"]
+        if segment in tree:
+            tree = tree[segment]
+        else:
+            tree[segment] = {"cycles": 0, "sub": {}, "meta": {}}
+            tree = tree[segment]
+    tree["cycles"] = item
+    return x
+
+
+def del_set(x: dict, path: str):
+    path = path.split(".")
+    if len(path) == 1:
+        del x[path[0]]
+        return x
+    tree = x
+    for segment in path[:-1]:
+        if "sub" in tree:
+            tree = tree["sub"]
+        if segment in tree:
+            tree = tree[segment]
+        else:
+            tree[segment] = {"cycles": 0, "sub": {}, "meta": {}}
+            tree = tree[segment]
+    del tree["sub"][path[-1]]
+    return x
+
+
+def inc_set_elem(x: dict, path: str, value: int = 1):
+    path = path.split(".")
+    tree = x
+    for segment in path:
+        if "sub" in tree:
+            tree = tree["sub"]
+        if segment in tree:
+            tree = tree[segment]
+        else:
+            tree[segment] = {"cycles": 0, "sub": {}, "meta": {}}
+            tree = tree[segment]
+    tree["cycles"] = tree["cycles"]+value
+    return x
+
+
+def set_meta_set_elem(x: dict, path: str, key: str, value: str):
+    path = path.split(".")
+    tree = x
+    for segment in path:
+        if "sub" in tree:
+            tree = tree["sub"]
+        if segment in tree:
+            tree = tree[segment]
+        else:
+            tree[segment] = {"cycles": 0, "sub": {}, "meta": {}}
+            tree = tree[segment]
+    tree["meta"][key] = value
+    return x
+
+
+def get_meta_set_elem(x: dict, path: str):
+    path = path.split(".")
+    tree = x
+    meta = {}
+    total = ""
+    for segment in path:
+        total += segment
+        if "sub" in tree:
+            tree = tree["sub"]
+        if segment in tree:
+            tree = tree[segment]
+        else:
+            tree[segment] = {"cycles": 0, "sub": {}, "meta": {}}
+            tree = tree[segment]
+        for key in tree["meta"].keys():
+            meta[key] = {"value": tree["meta"][key], "src": total}
+        total += '.'
+    return meta
+
+
+def print_meta_set_elem(x: dict, path: str):
+    meta = get_meta_set_elem(x, path)
+    for key in meta.keys():
+        val = meta[key]["value"]
+        inherited_from = meta[key]["src"]
+        inheritance = f"(inherited from {
+            inherited_from})" if inherited_from != ".".join(path) else ""
+        print(f"\"{key}\":\"{val}\" {inheritance}")
+
+
+def start_cycle(x: dict, path):
+    meta = get_meta_set_elem(x, path)
+    search = meta["music"]["value"] if meta["music"] else ""
+    run_command_stdin(
+        ["bash", "-c", "cat > /dev/tcp/localhost/6002"], f"search {search}\n")
+    run_command_stdin(
+        ["bash", "-c", "cat > /dev/tcp/localhost/6002"], "\n")
+    run_command_stdin(["notify-send", f"Cycle started for {path}"], "")
+
+    time.sleep(30*60)
+
+    pause = meta["break_music"]["value"] if meta["break_music"] else search
+    run_command_stdin(
+        ["bash", "-c", "cat > /dev/tcp/localhost/6002"], f"search {pause}\n")
+    run_command_stdin(
+        ["bash", "-c", "cat > /dev/tcp/localhost/6002"], "\n")
+    run_command_stdin(["notify-send", "Go take a break"], "")
+
+    time.sleep(10*60)
+
+    x = inc_set_elem(x, path)
+
+    return x
+
+
+match args.action:
+    case "show":
+        print_set(data)
+    case "add":
+        path = args.args[0]
+        data = add_to_set(data, path, 0)
+    case "inc":
+        path = args.args[0]
+        value = args.args[1] if len(args.args) > 1 else 1
+        data = inc_set_elem(data, path, value)
+    case "delete":
+        path = args.args[0]
+        data = del_set(data, path)
+    case "set":
+        path = args.args[0]
+        key = args.args[1]
+        value = args.args[2]
+        data = set_meta_set_elem(data, path, key, value)
+    case "meta":
+        path = args.args[0]
+        print_meta_set_elem(data, path)
+    case "start":
+        path = args.args[0]
+        try:
+            data = start_cycle(data, path)
+        except KeyboardInterrupt:
+            print("Interrupt caught. Saving...")
+    case "track":
+        path = args.args[0]
+        try:
+            while True:
+                data = start_cycle(data, path)
+        except KeyboardInterrupt:
+            print("Interrupt caught. Saving...")
+
+
+with open(f"{dir}/daytrack.json", "w") as f:
+    json.dump(data, f)
