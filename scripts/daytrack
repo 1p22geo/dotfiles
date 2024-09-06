@@ -33,7 +33,9 @@ except FileNotFoundError:
 parser = argparse.ArgumentParser("daytrack")
 
 parser.add_argument("action", choices=[
-                    "show", "add", "inc", "delete", "set", "meta", "start", "track"],
+                    "show", "add", "inc", "delete",
+                    "set", "meta",
+                    "start", "track"],
                     help="The action to execute")
 
 parser.add_argument("args", nargs="*")
@@ -140,7 +142,7 @@ def print_meta_set_elem(x: dict, path: str):
         val = meta[key]["value"]
         inherited_from = meta[key]["src"]
         inheritance = f"(inherited from {
-            inherited_from})" if inherited_from != ".".join(path) else ""
+            inherited_from})" if inherited_from != path else ""
         print(f"\"{key}\":\"{val}\" {inheritance}")
 
 
