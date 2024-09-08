@@ -30,6 +30,11 @@ except FileNotFoundError:
     data = {}
 
 
+def save(x):
+    with open(f"{dir}/daytrack.json", "w") as f:
+        json.dump(x, f)
+
+
 parser = argparse.ArgumentParser("daytrack")
 
 parser.add_argument("action", choices=[
@@ -203,9 +208,9 @@ match args.action:
         try:
             while True:
                 data = start_cycle(data, path)
+                save(data)
         except KeyboardInterrupt:
             print("Interrupt caught. Saving...")
 
 
-with open(f"{dir}/daytrack.json", "w") as f:
-    json.dump(data, f)
+save(data)
