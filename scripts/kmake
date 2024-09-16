@@ -1,6 +1,41 @@
 #!/usr/bin/python
 import os
 
+# the last one is for W*ndows users used to Powershell
+if len(os.sys.argv) == 1 or os.sys.argv[1] in ["-h", "--help", "help", "/?"]:
+    print("""
+----------------------------
+
+this is a very messy script to build
+the default linux kernel with a specific config
+
+basically go get some config file
+(doesn't matter where it is, your working directory doesn't matter too)
+
+if you don't have one you can
+
+cat /proc/config.gz | zcat > .config
+
+to get the config of the running kernel.
+
+
+just give the script the path to this config
+and it will ask a couple questions, clone Linux for you and compile it.
+
+
+
+Usage:
+
+    $ kmake /path/to/.config
+
+Environment variables:
+
+LINUX_SOURCE_DIR: the directory containing the Linux source.
+If nonexistent, will be `mkdir` and `git clone` 'd
+----------------------------
+          """)
+    os._exit(0)
+
 
 def cmd(q):
     print("Executing:")
@@ -10,18 +45,12 @@ def cmd(q):
     os.system(q)
 
 
+conf = os.sys.argv[1]
 try:
-    conf = os.sys.argv[1]
     open(conf).close()
 except Exception:
-    print("Failed opening config file.")
-    print()
-    print("Usage:")
-    prog = os.sys.argv[0]
-    print(f"     {prog} /path/to/.config")
-    print()
-    print("Environment variables:")
-    print("     LINUX_SOURCE_DIR: the directory containing the Linux source. If nonexistent, will be `mkdir` and `git clone` 'd ")
+    print(f"Failed opening config file: `{conf}`")
+    print("Try `kmake -h`")
     os._exit(1)
 linux = os.getenv("LINUX_SOURCE_DIR", "~/Documents/linux")
 try:
@@ -32,7 +61,7 @@ except Exception:
     accept = input("Clone linux now? [y/n]").lower().startswith("y")
     if not accept:
         os._exit(2)
-    cmd(f"git clone https://github.com/torvalds/linux {linux}")
+    cmd(f"git clone --depth 1 https://github.com/torvalds/linux {linux}")
 
 print("Sources and config ready.")
 
