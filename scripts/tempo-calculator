@@ -1,0 +1,57 @@
+#!/usr/bin/python
+
+import os
+import math
+
+try:
+    length_bars = float(os.sys.argv[1])
+    original_tempo = int(os.sys.argv[2])
+    new_tempo = int(os.sys.argv[3])
+    meter = int(os.sys.argv[4]) if len(os.sys.argv) > 4 else 4
+except Exception:
+    print(
+        "Usage: tempo-calculator <length_bars> <original_tempo> <new_tempo> [meter]")
+    print("""
+
+    length_bars: 
+        the length of the loop in bars
+    original_tempo:
+        the tempo of the orginal loop
+    new_tempo:
+        the desired tempo
+
+    OPTIONAL:
+    meter:
+        the upper number of the meter [how many beats in a bar] [default 4]
+
+    
+    Example:
+
+    You have a 8-bar bass loop .wav in 100BPM.
+    You run
+    `tempo-calculator 8 100 110`,
+    transpose by the given amount of semitones/cents
+
+    And now you have an 8-bar loop in 110 BPM
+    """)
+    os._exit(0)
+
+original_length = 60/original_tempo * length_bars * meter
+print(f"The sample is {original_length:.2f}s long.")
+print("If this doesn't match the actual length, there's either a silence period at the end, or the input data is wrong.")
+new_length = 60/new_tempo * length_bars * meter
+print(f"The sample will be {new_length:.2f}s after transposition")
+difference = new_length/original_length
+octaves = abs(math.log2(difference))
+semitones = octaves * 12
+cents = semitones * 100
+
+print("\nTRANSPOSITION")
+if difference < 1:
+    print("Transpose the sample UP")
+else:
+    print("Transpose the sample DOWN")
+print(f"by {octaves} octaves,")
+print(f"by {semitones} semitones,")
+print(f"or {cents} cents")
+print("To the degree of precision allowed by your DAW")
