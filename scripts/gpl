@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ ! -f /usr/local/share/gnugpl.txt ]]; then
+  echo "GNU GPL source not found. Downloading."
+  echo sudo curl https://www.gnu.org/licenses/gpl-3.0.txt -o /usr/local/share/gnugpl.txt
+  sudo curl https://www.gnu.org/licenses/gpl-3.0.txt -o /usr/local/share/gnugpl.txt
+fi
+
+cp /usr/local/share/gnugpl.txt ./LICENSE
+echo "Installed ./LICENSE"
