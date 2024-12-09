@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/bin/ls -1 . | xargs -I {} bash -c 'echo {}: $(du -ch ./{} 2>/dev/null | grep total)'
