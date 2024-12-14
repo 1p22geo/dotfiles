@@ -21,13 +21,3 @@ if vim.g.neovide then
   vim.g.neovide_cursor_animation_length = 0.05
   vim.g.neovide_cursor_trail_size = 0.1
 end
-
-local cmp = require("cmp")
-
-cmp.setup({
-  mapping = {
-    ["<C-K>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-    ["<C-J>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-    ["<Enter>"] = cmp.mapping.confirm({ select = true }),
-  },
-})

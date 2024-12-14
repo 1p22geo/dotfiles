@@ -1,0 +1,4 @@
+#!/bin/bash
+
+debugpy --listen 5678 --wait-for-client $@ &
+disown
