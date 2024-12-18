@@ -1,6 +1,7 @@
 -- since this is just an example spec, don't actually load anything here and return an empty spec
 -- stylua: ignore
 
+
 -- every spec file under the "plugins" directory will be loaded automatically by lazy.nvim
 --
 -- In your plugin files, you can:
@@ -25,7 +26,6 @@ return {
     -- opts will be merged with the parent spec
     opts = { use_diagnostic_signs = true },
   },
-
 
   -- add symbols-outline
   {
@@ -190,18 +190,6 @@ return {
       table.insert(opts.sections.lualine_x, "😄")
     end,
   },
-
-  -- or you can return new options to override all the defaults
-  {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = function()
-      return {
-        --[[add your custom lualine config here]]
-      }
-    end,
-  },
-
   -- use mini.starter instead of alpha
 
   -- add jsonls and schemastore packages, and setup treesitter for json, json5 and jsonc
@@ -231,11 +219,14 @@ return {
   -- then: setup supertab in cmp
   {
     "hrsh7th/nvim-cmp",
+    event = "VimEnter",
+    enabled = true,
     dependencies = {
       "hrsh7th/cmp-emoji",
     },
     ---@param opts cmp.ConfigSchema
     opts = function(_, opts)
+
       local has_words_before = function()
         unpack = unpack or table.unpack
         local line, col = unpack(vim.api.nvim_win_get_cursor(0))
