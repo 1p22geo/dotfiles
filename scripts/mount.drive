@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rclone mount google2: /home/bartoszg/Drive/ --allow-other --cache-db-purge --fast-list --poll-interval 10m
