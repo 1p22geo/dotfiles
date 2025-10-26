@@ -2,11 +2,14 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
-vim.keymap.set("n", "S", "yyP", { noremap = true, silent = true })
+vim.keymap.set({ "n", "v" }, "<C-g>", ":Gen<CR>")
 
--- J to move the current line down
-vim.keymap.set("n", "<C-j>", ":m .+1<CR>==", { noremap = true, silent = true })
--- K to move the current line up
-vim.keymap.set("n", "<C-k>", ":m .-2<CR>==", { noremap = true, silent = true })
-
-vim.keymap.set({ "n", "v" }, "<C-x>", ":Gen<CR>")
+require("gen").prompts["Elaborate_Text"] = {
+  prompt = "Elaborate the following text:\n$text",
+  replace = true,
+}
+require("gen").prompts["Fix_Code"] = {
+  prompt = "Fix the following code. Only output the result in format ```$filetype\n...\n```:\n```$filetype\n$text\n```",
+  replace = true,
+  extract = "```$filetype\n(.-)```",
+}
