@@ -2,6 +2,7 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+--[[
 vim.keymap.set({ "n", "v" }, "<C-g>", ":Gen<CR>")
 
 require("gen").prompts["Elaborate_Text"] = {
@@ -13,3 +14,4 @@ require("gen").prompts["Fix_Code"] = {
   replace = true,
   extract = "```$filetype\n(.-)```",
 }
+]]
