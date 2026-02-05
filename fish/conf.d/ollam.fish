@@ -1,1 +1,3 @@
-set -gx OLLAMA_HOST https://equipped-badly-yeti.ngrok-free.app
+set -gx OLLAMA_HOST http://localhost:9000
+
+alias ng="npx @angular/cli"

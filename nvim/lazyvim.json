@@ -6,6 +6,7 @@
     "lazyvim.plugins.extras.editor.dial",
     "lazyvim.plugins.extras.editor.inc-rename",
     "lazyvim.plugins.extras.lang.angular",
+    "lazyvim.plugins.extras.lang.dotnet",
     "lazyvim.plugins.extras.lang.ember",
     "lazyvim.plugins.extras.lang.java",
     "lazyvim.plugins.extras.lang.json",

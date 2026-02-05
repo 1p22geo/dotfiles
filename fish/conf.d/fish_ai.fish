@@ -2,8 +2,7 @@
 ## Supported major.minor versions of Python.
 ## Unit tests are run in CI against these versions.
 ##
-# TODO: Add 3.14. It's currently broken with uv, not sure why.
-set -g _fish_ai_supported_versions 3.9 3.10 3.11 3.12 3.13
+set -g _fish_ai_supported_versions 3.10 3.11 3.12 3.13 3.14
 
 set -g _fish_ai_install_dir (test -z "$XDG_DATA_HOME"; and echo "$HOME/.local/share/fish-ai"; or echo "$XDG_DATA_HOME/fish-ai")
 set -g _fish_ai_config_path (test -z "$XDG_CONFIG_HOME"; and echo "$HOME/.config/fish-ai.ini"; or echo "$XDG_CONFIG_HOME/fish-ai.ini")
@@ -54,7 +53,7 @@ function _fish_ai_install --on-event fish_ai_install
     _fish_ai_set_python_version
     if type -q uv
         echo "🥡 Setting up a virtual environment using uv..."
-        uv venv --seed --python $_fish_ai_python_version "$_fish_ai_install_dir"
+        uv venv --quiet --seed --python $_fish_ai_python_version "$_fish_ai_install_dir"
     else
         echo "🥡 Setting up a virtual environment using venv..."
         python$_fish_ai_python_version -m venv "$_fish_ai_install_dir"
@@ -86,8 +85,10 @@ function _fish_ai_update --on-event fish_ai_update
         mv "$HOME/.fish-ai" "$_fish_ai_install_dir"
     end
     if test -f "$HOME/.config/fish-ai.ini"
-        echo "👷 Moving configuration file to '$_fish_ai_config_path'."
-        mv "$HOME/.config/fish-ai.ini" "$_fish_ai_config_path"
+        if test "$_fish_ai_config_path" != "$HOME/.config/fish-ai.ini"
+            echo "👷 Moving configuration file to '$_fish_ai_config_path'."
+            mv "$HOME/.config/fish-ai.ini" "$_fish_ai_config_path"
+        end
     end
     # Upgrade to fish-ai 2.0.0
     set -l provider ("$_fish_ai_install_dir/bin/lookup_setting" provider)
@@ -108,7 +109,7 @@ function _fish_ai_update --on-event fish_ai_update
 
     _fish_ai_set_python_version
     if type -q uv
-        uv venv --seed --python $_fish_ai_python_version "$_fish_ai_install_dir"
+        uv venv --quiet --clear --seed --python $_fish_ai_python_version "$_fish_ai_install_dir"
     else
         python$_fish_ai_python_version -m venv --upgrade "$_fish_ai_install_dir"
     end

@@ -28,3 +28,12 @@ if status is-interactive # Commands to run in interactive sessions can go here
     source /usr/share/doc/find-the-command/ftc.fish
 
 end
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"
+
+# pnpm
+set -gx PNPM_HOME "/home/bartoszg/.local/share/pnpm"
+if not string match -q -- $PNPM_HOME $PATH
+  set -gx PATH "$PNPM_HOME" $PATH
+end
+# pnpm end
